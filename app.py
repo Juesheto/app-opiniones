@@ -83,17 +83,34 @@ from transformers import pipeline
 # Cargar modelo de sentimiento multilingüe
 clasificador = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
 
-def clasificar_sentimiento_transformers(texto):
-    resultado = clasificador(texto)[0]
-    estrellas = int(resultado['label'][0])
-    if estrellas <= 2:
+def clasificar_sentimiento_mejorado(texto):
+    texto = texto.lower()
+
+    frases_positivas = [
+        'excelente', 'me encantó', 'muy buen', 'recomendado', 'volvería a comprar',
+        'satisfecho', 'perfectamente', 'funcionó', 'eficiente', 'todo bien', 'sin problemas'
+    ]
+
+    frases_negativas = [
+        'no funciona', 'mal estado', 'muy demorado', 'devolverlo', 'no llegó',
+        'mala calidad', 'no lo recomiendo', 'empaque venía roto',
+        'no fue lo que esperaba', 'coincide con el producto'
+    ]
+
+    positivo = any(frase in texto for frase in frases_positivas)
+    negativo = any(frase in texto for frase in frases_negativas)
+
+    if positivo and not negativo:
+        return 'Positivo'
+    elif negativo and not positivo:
         return 'Negativo'
-    elif estrellas == 3:
+    elif positivo and negativo:
         return 'Neutro'
     else:
-        return 'Positivo'
+        return 'Neutro'
 
-df['sentimiento'] = df['opinion'].apply(clasificar_sentimiento_transformers)
+df['sentimiento'] = df['opinion'].apply(clasificar_sentimiento_mejorado)
+
 
 print(df[['opinion', 'sentimiento']])
 
