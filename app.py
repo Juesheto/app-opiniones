@@ -7,7 +7,7 @@ Original file is located at
     https://colab.research.google.com/drive/1l40RvSshFvU48kD-swBq35wrMKlyAqBn
 """
 
-!pip install wordcloud textblob
+
 import nltk
 nltk.download('stopwords')
 
